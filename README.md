@@ -21,7 +21,6 @@ A curated collection of essential utilities and development tools for UE4SS Lua 
 ## 📁 Repository Structure
 
 ```
-shared/
 ├── Utils/
 │   └── Utils.lua                 # Core utility functions
 ├── LuaReplDebug/
@@ -34,9 +33,14 @@ shared/
 
 ## 🛠 Installation
 
-1. Copy the entire `shared/` directory to your UE4SS mods folder:
+1. Copy all files and directories from this repository into your existing UE4SS `shared` folder:
    ```
    YourGame/Binaries/Win64/ue4ss/Mods/shared/
+   ```
+   
+   Example installation path:
+   ```
+   C:\Program Files (x86)\Steam\steamapps\common\Lies of P\LiesofP\Binaries\Win64\ue4ss\Mods\shared\
    ```
 
 2. In your mod's `main.lua`, require the utilities you need:
