@@ -45,9 +45,9 @@ A curated collection of essential utilities and development tools for UE4SS Lua 
 
 2. In your mod's `main.lua`, require the utilities you need:
    ```lua
-   local Utils = require("shared/Utils/Utils")
-   local json = require("shared/dkjson")
-   local debugger = require("shared/ue4ss_debugger")
+   local Utils = require("Utils/Utils")
+   local json = require("dkjson")
+   local debugger = require("ue4ss_debugger")
    ```
 
 ## 📖 Usage Guide
@@ -55,7 +55,7 @@ A curated collection of essential utilities and development tools for UE4SS Lua 
 ### Basic Utilities
 
 ```lua
-local Utils = require("shared/Utils/Utils")
+local Utils = require("Utils/Utils")
 
 -- String operations
 local contains = Utils.StringContains("Hello World", "World") -- true
@@ -70,7 +70,7 @@ The REPL debugger enables real-time Lua code execution and testing:
 
 ```lua
 -- In your mod's main.lua
-local debugger = require("shared/ue4ss_debugger")
+local debugger = require("ue4ss_debugger")
 
 -- Start the debugger server
 debugger.start({
@@ -95,7 +95,7 @@ Connect to the debugger from external tools on `localhost:8172` for live code ex
 ### JSON Operations
 
 ```lua
-local json = require("shared/dkjson")
+local json = require("dkjson")
 
 -- Encode table to JSON
 local data = {name = "Player", level = 10}
@@ -108,7 +108,7 @@ local decoded = json.decode(jsonString)
 ### Socket Communication
 
 ```lua
-local socket = require("shared/socket")
+local socket = require("socket")
 
 -- Create TCP connection
 local client = socket.connect("localhost", 8080)
