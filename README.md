@@ -5,8 +5,9 @@ A curated collection of essential utilities and development tools for UE4SS Lua 
 ## 🚀 Features
 
 ### Core Utilities
-- **Utils**: Essential string manipulation and logging utilities
+- **Utils**: Comprehensive utility library with string manipulation, logging, actor spawning, and timer management
 - **JSON Support**: Full-featured JSON encoding/decoding with dkjson library (included for convenience)
+- **Timer Library**: Cron.lua timing library for precise interval and delayed execution (included for convenience)
 - **Socket Communication**: LuaSocket integration for network operations and external tool communication
 
 ### Development & Debugging
@@ -27,6 +28,7 @@ A curated collection of essential utilities and development tools for UE4SS Lua 
 │   ├── LuaReplDebug.lua         # Live debugging client
 │   └── socket/                   # LuaSocket core components
 ├── dkjson.lua                    # JSON library (included for convenience)
+├── cron.lua                      # Timer library for intervals and delays (included for convenience)
 ├── socket.lua                    # LuaSocket helper module
 └── ue4ss_debugger.lua           # REPL debugger backend
 ```
@@ -62,6 +64,76 @@ local contains = Utils.StringContains("Hello World", "World") -- true
 
 -- Logging to both console and debug output
 Utils.Log(SomeUObjectWithLog, "Debug message")
+
+-- Print current Unreal Engine version
+Utils.PrintUEVersion() -- Outputs: UNREAL VERSION: 5.1 (example)
+
+-- Spawn actors in the world
+local spawned_actor = Utils.Summon("/Game/Blueprints/MyActor")
+-- Or with custom location and rotation
+local custom_location = {X = 100, Y = 200, Z = 300}
+local custom_rotation = {Pitch = 0, Yaw = 90, Roll = 0}
+local positioned_actor = Utils.Summon("/Game/Blueprints/MyActor", custom_location, custom_rotation)
+
+-- Create repeating timers
+local timer_id = Utils.SetInterval(function()
+    print("This runs every 3 seconds")
+end, 3.0)
+
+-- Stop timers when done
+Utils.ClearInterval(timer_id)
+```
+
+### Timer Management
+
+The Utils library includes a robust timer system for executing functions at regular intervals:
+
+```lua
+local Utils = require("Utils/Utils")
+
+-- Create a timer that executes every 2 seconds
+local health_check_timer = Utils.SetInterval(function()
+    local player = UEHelpers.GetPlayerController()
+    if player and player.Pawn then
+        print("Player health check: " .. tostring(player.Pawn.Health))
+    end
+end, 2.0)
+
+-- Create a one-time cleanup timer
+local cleanup_timer = Utils.SetInterval(function()
+    -- Perform cleanup
+    print("Cleaning up temporary objects...")
+    -- Stop this timer after first execution
+    Utils.ClearInterval(cleanup_timer)
+end, 10.0)
+
+-- Stop all timers when mod is disabled
+function OnModDisabled()
+    Utils.ClearInterval(health_check_timer)
+    Utils.ClearInterval(cleanup_timer)
+end
+```
+
+### Actor Spawning
+
+The `Summon` function provides easy actor spawning with optional positioning:
+
+```lua
+local Utils = require("Utils/Utils")
+
+-- Spawn at player location (default behavior)
+local basic_spawn = Utils.Summon("/Game/Blueprints/Weapons/Sword_BP")
+
+-- Spawn at specific world coordinates
+local world_location = {X = 1000, Y = 2000, Z = 500}
+local world_rotation = {Pitch = 0, Yaw = 45, Roll = 0}
+local positioned_spawn = Utils.Summon("/Game/Blueprints/Items/Potion_BP", world_location, world_rotation)
+
+-- Use the returned actor reference for further manipulation
+if positioned_spawn then
+    positioned_spawn:SetActorScale3D({X = 2, Y = 2, Z = 2}) -- Make it bigger
+    print("Successfully spawned and scaled: " .. positioned_spawn:GetFullName())
+end
 ```
 
 ### Live REPL Debugger
@@ -122,9 +194,15 @@ end
 ## 🔧 Components Detail
 
 ### Utils.lua
-Core utility functions including:
-- `StringContains(text, substring)`: Fast plain-text string searching
-- `Log(Ar, Message)`: Dual-output logging system
+Comprehensive utility library including:
+- `StringContains(text, substring)`: Fast plain-text string searching with pattern matching disabled
+- `Log(Ar, Message)`: Dual-output logging system for console and debug output
+- `Summon(ObjectName, OptionalLocation?, OptionalRotation?)`: Actor spawning with automatic location/rotation defaults
+- `PrintUEVersion()`: Display current Unreal Engine version information
+- `SetInterval(callback, delay_seconds)`: Create repeating timers with unique ID tracking
+- `ClearInterval(interval_id)`: Stop specific timers by their unique identifier
+
+**Dependencies**: Requires `UEHelpers.UEHelpers` and `cron` library for full functionality
 
 ### ue4ss_debugger.lua
 Live REPL debugger featuring:
@@ -141,13 +219,24 @@ Full-featured JSON library (Version 2.8) supporting:
 - High-performance encoding/decoding
 - Extensive customization options
 
+### cron.lua
+Lightweight timing library (Version 2.0.0) providing:
+- `cron.after(time, callback, ...)`: Execute function once after specified delay
+- `cron.every(time, callback, ...)`: Execute function repeatedly at intervals
+- Precise time tracking with delta time updates
+- Support for function arguments and callable objects
+- Used internally by Utils.SetInterval for timer management
+
 ## 🎯 Use Cases
 
 - **Live Development**: Real-time code testing and debugging without game restarts
 - **Rapid Prototyping**: Quick iteration with REPL-style development
+- **Actor Management**: Dynamic spawning and positioning of game objects
+- **Timer-Based Systems**: Repeating tasks, health regeneration, periodic checks, and scheduled events
 - **Data Management**: JSON-based configuration and save systems with readily available libraries
 - **Network Integration**: Socket communication for external tool integration
 - **Enhanced Logging**: Multi-target debugging output for complex mod development
+- **Version Compatibility**: Easy UE version checking for mod compatibility
 
 ## 🤝 Contributing
 
@@ -161,6 +250,7 @@ This repository represents utilities extracted from multiple successful modding 
 
 Individual components maintain their original licenses:
 - **dkjson.lua**: MIT License (David Heiko Kolf)
+- **cron.lua**: MIT License (Enrique García Cota)
 - **socket.lua**: LuaSocket License (Diego Nehab)
 - **Custom utilities**: Available for use in UE4SS modding projects
 
